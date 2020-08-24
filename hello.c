@@ -2,5 +2,6 @@
 
 int main(void)
 {
+    // my first program
     printf("Hello\n");	
 }
