@@ -15,6 +15,7 @@ int main()
 	int running = 1;
 	struct my_msg_st some_data;
 	long int msg_to_receive = 0;
+	char buffer[BUFSIZ];
 
 	// step 1. msgget()
 	msgid = msgget(KEY_VALUE, 0666 | IPC_CREAT);
@@ -26,33 +27,32 @@ int main()
 		exit(EXIT_FAILURE);
 	}
 
-	// 메세지큐에서 데이터를 읽어오는 프로세스
+	// 메세지큐에 데이터를 보내는 프로세스
 	while(running)
 	{
-		// step 2. msgrcv()
-		// 만약에 메세지큐로부터 데이터를 수신하는데 실패했다면,
-		if(msgrcv(msgid, (void *)&some_data, BUFSIZ, msg_to_receive, 0) ==-1)
+		// 키보드로 문자열을 입력받는다.
+		printf("Enter some text: ");
+		fgets(buffer, BUFSIZ, stdin);
+		some_data.my_msg_type = 1;
+
+		// strcpy함수를 사용하여 buffer에서 구조체안에 some_text로 문자열 복사
+		strcpy(some_data.some_text, buffer);
+
+		// step 2. msgsnd()
+		// 만약에 메세지큐로 데이터를 보내는데 실패했다면,
+		// MAX_TEXT의 사이즈는 (구조체 - long int) 사이즈 이다.
+		if(msgsnd(msgid, (void *)&some_data, MAX_TEXT, 0) ==-1)
 		{
-			fprintf(stderr, "msgrcv failed with error: %d\n", errno);
+			fprintf(stderr, "msgsnd failed with error: %d\n", errno);
 			exit(EXIT_FAILURE);
 		}
-		// 정상적으로 메세지큐로부터 데이터를 수신했다면, 문자열 데이터를 출력
-		printf("You wrote : %s", some_data.some_text);
-
-		// 만약 수신된 문자열이 "end"일 경우 
+		// 키보드로부터 입력 받은 데이터가 "end"일 경우 종료
 		if(strncmp(some_data.some_text, "end", 3)==0)
 		{
 			running = 0;	//while문을 빠져나가기 위한 조건 변경
 		}
 	}
 
-	// step 3. msgctl로 메세지큐 삭제
-	// 메세지큐 삭제에 실패할 경우,
-	if(msgctl(msgid, IPC_RMID, 0)==-1)
-	{
-		fprintf(stderr, "msgctl(IPC_RMID) failed with error: %d\n", errno);
-		exit(EXIT_FAILURE);
-	}
 	exit(EXIT_SUCCESS);
 }
 
