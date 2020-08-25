@@ -44,7 +44,7 @@ int main()
 		printf("You wrote : %s", some_data.some_text);
 
 		// 만약 수신된 문자열이 "end"일 경우 
-		if((strncmp(some_data.some_text, "end", 3)==0)
+		if(strncmp(some_data.some_text, "end", 3)==0)
 		{
 			running = 0;	//while문을 빠져나가기 위한 조건 변경
 		}
