@@ -1,4 +1,4 @@
-#include<stdlib.h>
+#include<stdlib.h>		// EXIT_FAILURE, EXIT_SUCCESS
 #include<stdio.h>
 #include<string.h>
 #include<errno.h>
@@ -9,7 +9,8 @@
 
 struct my_msg_st
 {
-	long int my_msg_type;	//메세지큐의 구조체에서 첫번째 데이터 타입 long int는 반드시 필요
+	//메세지큐의 구조체에서 첫번째 데이터 타입 long int는 반드시 필요
+	long int my_msg_type;	
 	char some_text[BUFSIZ];
 };
 
@@ -23,14 +24,14 @@ int main()
 	// step 1. msgget()
 	msgid = msgget((key_t)1234, 0666 | IPC_CREAT);
 
-	// 정상적으로 메시지큐가 생성되지 않은 경우
+	// 정상적으로 메세지큐가 생성되지 않은 경우
 	if(msgid==-1)
 	{
 		fprintf(stderr, "msgget failed with error: %d\n", errno);
 		exit(EXIT_FAILURE);
 	}
 
-	// 메시지큐에서 데이터를 읽어오는 프로세스
+	// 메세지큐에서 데이터를 읽어오는 프로세스
 	while(running)
 	{
 		// step 2. msgrcv()
